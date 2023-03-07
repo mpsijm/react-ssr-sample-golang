@@ -10,7 +10,7 @@ This project demonstrates rendering a react app on the server side using Golang.
 The client side code consists of a small React app that uses some popular libraries such as react-router, bootstrap etc. It 
 features a page that has dynamic data with state inserted from the server side which can then also be later updated on the client side. 
 
-The server side code consists of a simple Go application that renders JS with the help of [Duktape](http://duktape.org/index.html) and [Go Duktape bindings](https://github.com/olebedev/go-duktape). The server side app fetches some basic postcode data available from a third party, open API - https://api.postcodes.io.
+The server side code consists of a simple Go application that renders JS with the help of Node. The server side app fetches some basic postcode data available from a third party, open API - https://api.postcodes.io.
 
 
 ## Run
@@ -45,14 +45,14 @@ by Webpack. Both the server.js and client.js depend upon the the main React App 
 that the client side component includes client side specific code such as browser routing, and the server side code includes
 server side routing and injection of initial state.
 
-The Server side uses Duktape to render only the server.js bundle which gets packaged as part of the build process.
+The Server side uses Node to render only the server.js bundle which gets packaged as part of the build process.
 
 Regarding SSR, the main files of interest are:
 
 - react-src/client.js
 - react-src/server.js
 - src/main.go (contains the entrypoint and routing logic)
-- src/render/engine.go (contains the rendering / binding logic to Duktape)
+- src/render/engine.go (contains the rendering / binding logic to Node)
 
 
 ## Performance

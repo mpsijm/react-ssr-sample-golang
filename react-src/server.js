@@ -6,7 +6,8 @@ import serialize from 'serialize-javascript';
 import App from './components/app'
 
 
-window.render = (template, currentPath, serverSideState) => {
+/* global global */
+global.render = (template, currentPath, serverSideState) => {
 
     const location = currentPath; 
     const routerContext = {};

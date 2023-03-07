@@ -15,7 +15,6 @@ var config *Config
 var engine *render.Engine
 
 type Config struct {
-	polyfillLocation string
 	scriptLocation   string
 	templateLocation string
 	staticDir        string
@@ -27,14 +26,13 @@ func init() {
 	c := new(Config)
 
 	pwd, _ := os.Getwd()
-	c.polyfillLocation = pwd + "/react-build/duktape-polyfill.js"
 	c.scriptLocation = pwd + "/react-build/static/js/server.js"
 	c.templateLocation = pwd + "/react-build/index.html"
 	c.staticDir = pwd + "/react-build"
-	c.port = "8080"
+	c.port = "8088"
 	config = c
 
-	engine = render.NewEngine(c.polyfillLocation, c.scriptLocation, c.templateLocation)
+	engine = render.NewEngine(c.scriptLocation, c.templateLocation)
 }
 
 func main() {

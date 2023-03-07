@@ -2,29 +2,37 @@ package render
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
+	"strings"
 
-	"gopkg.in/olebedev/go-duktape.v3"
+	"github.com/mpsijm/go-node"
 )
 
 type Engine struct {
-	polyfillContents string
 	scriptContents   string
 	templateContents string
+	vm               node.VM
 }
 
-func NewEngine(polyfillLocation, scriptLocation, templateLocation string) *Engine {
+func NewEngine(scriptLocation, templateLocation string) *Engine {
 
 	e := new(Engine)
-	e.polyfillContents = loadFileContents(polyfillLocation)
 	e.scriptContents = loadFileContents(scriptLocation)
 	e.templateContents = loadFileContents(templateLocation)
+
+	// TODO All of the below might panic
+	e.vm = node.New(nil)
+
+	if _, err := e.vm.Run(e.scriptContents); err != nil {
+		panic(err)
+	}
+
 	return e
 }
 
 func loadFileContents(filePath string) string {
 
-	scriptContents, err := ioutil.ReadFile(filePath)
+	scriptContents, err := os.ReadFile(filePath)
 	if err != nil {
 		// TODO Handle this properly
 		fmt.Println(err)
@@ -33,31 +41,19 @@ func loadFileContents(filePath string) string {
 	return string(scriptContents)
 }
 
-// We create and teardown a new duktape context per invocation, bit wasteful but likely not thread safe otherwise
+// We create and teardown a new Node VM, bit wasteful but likely not thread safe otherwise
 func (e *Engine) Render(currentPath string, serverSideState string) string {
 
-	ctx := duktape.New()
+	// TODO All of the below might panic
+	result, err := e.vm.Run(fmt.Sprintf("global.render(`%s`, `%s`, `%s`)",
+		strings.ReplaceAll(e.templateContents, "`", "\\`"),
+		strings.ReplaceAll(currentPath, "`", "\\`"),
+		strings.ReplaceAll(serverSideState, "`", "\\`"),
+	))
 
-	if err := ctx.PevalString(e.polyfillContents); err != nil {
-		fmt.Println("Error evaluating polyfill:", err, "Line number:", err.(*duktape.Error).LineNumber)
-		panic(err.(*duktape.Error).Message)
+	if err != nil {
+		panic(err)
 	}
-
-	if err := ctx.PevalString(e.scriptContents); err != nil {
-		fmt.Println("Error evaluating script:", err, "Line number:", err.(*duktape.Error).LineNumber)
-		panic(err.(*duktape.Error).Message)
-	}
-
-	// TODO All of the below could panic
-	ctx.GetGlobalString("render")
-	ctx.PushString(e.templateContents)
-	ctx.PushString(currentPath)
-	ctx.PushString(serverSideState)
-	ctx.Call(3)
-
-	result := ctx.GetString(-1)
-
-	ctx.DestroyHeap()
 
 	return result
 }
