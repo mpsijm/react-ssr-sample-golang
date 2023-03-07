@@ -1,11 +1,3 @@
-@import "~bootstrap/scss/bootstrap.scss";
-@import "~bootstrap/scss/_variables.scss";
-@import "~bootstrap/scss/_mixins.scss";
-
-.btn-primary {
-  @include button-variant(#ddd, #959595, #bfbfbf);
-}
-
 button:focus {
   outline: 0 !important;
 }
