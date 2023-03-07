@@ -1,7 +1,7 @@
 *
 !src
-!Gopkg.toml
-!Gopkg.lock
+!go.mod
+!go.sum
 
 !webpack.config.js
 !package.json
